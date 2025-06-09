@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+	
+  <meta charset="UTF-8">
+  <title>一般牆配筋計算</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, select { padding: 6px; margin: 6px 0; width: 100%; }
+    label { font-weight: bold; margin-top: 12px; display: block; }
+    button { padding: 10px 20px; margin-top: 20px; }
+    #result { margin-top: 30px; font-size: 16px; white-space: pre-wrap; background: #f3f3f3; padding: 15px; border-radius: 5px; }
+    .ok { color: green; font-weight: bold; }
+    .ng { color: red; font-weight: bold; }
+
+
+	  .row { display: flex; gap: 20px; flex-wrap: wrap;  }
+  .row label { display: flex; flex-direction: column; flex: 1 1 0;  } 
+  .normal { font-weight: normal;  }
+  </style>
+</head>
+<body oncontextmenu="return false">
+
+  <div id="calculator">
+    <h2>一般牆配筋計算</h2>
+  
+<!-- 雙欄-->
+<div style="display: flex; gap: 30px; align-items: flex-start;">
+
+ <div style="flex: 1;">
+    <div style="margin-bottom: 20px;">
+      <img src="https://github.com/hsuyuwen/normalwall/raw/b8406d1339fa0585d28ef97ea3e44efc7f4d624f/%E4%B8%80%E7%8F%AD%E7%89%86.png" width="180">
+    </div>
+    
+  </div>
+
+  <!-- 右欄 -->
+  <div style="flex: 1;">
+    
+      <label>牆高 H（cm）：<input type="number" id="H" value="500"></label>
+      <label>牆長 L（cm）：<input type="number" id="L" value="100"></label>
+      <label>牆厚 t（cm）：<input type="number" id="t" value="20"></label>
+      <label>保護層 c.c.（cm）：<input type="number" id="cc" value="2"></label>          
+     
+    </div>
+</div>
+
+ <div class="row">
+      <label>混凝土強度：
+        <select id="concreteGrade">
+          <option value="280">280 kgf/cm²</option>
+          <option value="350">350 kgf/cm²</option>
+          <option value="420">420 kgf/cm²</option>
+        </select>
+      </label>   
+
+      <label>主筋降伏 fy（kgf/cm²）：
+        <select id="fy">
+          <option value="2800">2800 kgf/cm²</option>
+          <option value="4200">4200 kgf/cm²</option>
+          <option value="4900">4900 kgf/cm²</option>
+          <option value="5600">5600 kgf/cm²</option>
+        </select>
+      </label>
+    </div>
+	  
+    <label>
+    <div class="row">	
+    <label>垂直筋號數：
+      <select id="vrebar">
+        <option value="D13">D13</option>
+        <option value="D16">D16</option>
+        <option value="D19">D19</option>
+        <option value="D22">D22</option>
+        <option value="D25">D25</option>
+        <option value="D28">D28</option>
+        <option value="D29">D29</option>
+        <option value="D32">D32</option>
+        <option value="D36">D36</option>
+      </select>
+    </label>
+    <label>垂直鋼筋間距（cm）：<input type="number" id="S_V" value="20"></label>	
+    </div>
+
+    <label>
+    <div class="row">	
+    <label>水平筋號數：
+      <select id="hrebar">
+        <option value="D13">D13</option>
+        <option value="D16">D16</option>
+        <option value="D19">D19</option>
+        <option value="D22">D22</option>
+        <option value="D25">D25</option>
+        <option value="D28">D28</option>
+        <option value="D29">D29</option>
+        <option value="D32">D32</option>
+        <option value="D36">D36</option>
+      </select>
+    </label>
+    <label>水平鋼筋間距（cm）：<input type="number" id="S_H" value="20"></label>
+    </div>	
+	
+    <label>
+    <div class="row">	
+    <label>SDS：<input type="number" id="SDS" value="0.81"></label>
+    <label>用途係數 I：<input type="number" id="Ip" value="1.25"></label>
+    </div>	
+	
+    <label>
+    <div class="row">
+    <label>地面至牆底 h1（m）：<input type="number" id="h1" value="4.6"></label>
+    <label>牆高 h2（m）：<input type="number" id="h2" value="9.4"></label>
+    </div>	
+		
+    <label>
+    <div class="row">	
+    <label>風壓 Fw（kgf/m²）：<input type="number" id="Fw" value="500"></label>
+    <label>靜載重 SDL（kgf/m²）：<input type="number" id="SDL" value="500"></label>
+    </div>	
+
+    <label>
+    <div class="row">		
+    <label>牆型：
+      <select id="a1">
+        <option value="非懸臂">非懸臂</option>
+        <option value="懸臂">懸臂</option>
+      </select>
+    </label>
+
+    <label>工址類型：
+      <select id="a2">
+        <option value="一般工址">一般工址</option>
+        <option value="臺北盆地">臺北盆地</option>
+      </select>
+    </label>
+    </div>	
+	
+    <button onclick="calculate()">GOGO</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+
+
+    const rebarTable = {
+      D13: { db: 1.27, A: 1.27 },
+      D16: { db: 1.59, A: 1.99 },
+      D19: { db: 1.91, A: 2.87 },
+      D22: { db: 2.22, A: 3.87 },
+      D25: { db: 2.54, A: 5.07 },
+      D28: { db: 2.87, A: 6.47 },
+      D29: { db: 2.87, A: 6.47 },
+      D32: { db: 3.23, A: 8.17 },
+      D36: { db: 3.58, A: 10.07 },
+    };
+
+    function calculate() {
+      const H = +document.getElementById("H").value;
+      const L = +document.getElementById("L").value;
+      const t = +document.getElementById("t").value;
+      const cc = +document.getElementById("cc").value;
+      const fc = +document.getElementById("concreteGrade").value;
+      const fy = +document.getElementById("fy").value;
+      const hrebar = document.getElementById("hrebar").value;
+      const vrebar = document.getElementById("vrebar").value;
+      const S_H = +document.getElementById("S_H").value;
+      const S_V = +document.getElementById("S_V").value;
+      const SDS = +document.getElementById("SDS").value;
+      const Ip = +document.getElementById("Ip").value;
+      const h1 = +document.getElementById("h1").value;
+      const h2 = +document.getElementById("h2").value;
+      const Fw = +document.getElementById("Fw").value;
+      const SDL = +document.getElementById("SDL").value;
+      const a1 = document.getElementById("a1").value;
+      const a2 = document.getElementById("a2").value;
+
+      let ap, Rp;
+
+if (a1 === "非懸臂") {
+  ap = 1;
+  Rp = 2.5;
+} else if (a1 === "懸臂") {
+  ap = 2.5;
+  Rp = 2.5;
+}
+   let Rpa;
+
+if (a2 === "臺北盆地") {
+ Rpa = 1 + (Rp - 1) / 2
+} else  {
+  Rpa = 1 + (Rp - 1) / 1.5
+}
+      const W = (t / 100) * 2.4 + SDL / 1000;
+      const F = 0.4 * SDS * Ip * (ap / Rpa) * (1 + (2 * h1 / h2)) * W;
+      const Fmax = 1.6 * SDS * Ip * W;
+      const Fmin = 0.3 * SDS * Ip * W;
+let Wu1;
+
+if (F < Fmin) {
+  Wu1 = Fmin;
+} else if (F > Fmax) {
+  Wu1 = Fmax;
+} else {
+  Wu1 = F;
+}
+      const Wu2 = 1.6 * Fw / 1000;
+      const WuControl = Math.max(Wu1, Wu2);
+
+let Mu, Vu;
+
+if (a1 === "非懸臂") {
+  Mu = (WuControl * (H / L) ** 2) / 8;
+  Vu = WuControl * H / L / 2;
+} else {
+  Mu = (WuControl * (H / L) ** 2) / 2;
+  Vu = WuControl * H / L;
+}
+
+      const dbV = rebarTable[vrebar].db;
+      const AbV = rebarTable[vrebar].A;
+      const dbH = rebarTable[hrebar].db;
+      const AbH = rebarTable[hrebar].A;
+
+      const d = t - cc - dbV / 2;
+let beta;
+
+if (fc <= 280) {
+  beta = 0.85;
+} else {
+  beta = Math.max(0.85 - 0.05 * ((fc - 280) / 70), 0.65);
+}
+      const et = fy / 2040000;
+      const C = (0.003 / (0.006 + et)) * d;
+      const aa = beta * C;
+
+      const As_max = 0.85 * fc * aa * L / fy;
+      const As_useV = AbV * (L / S_V) ;
+      const As_useH = AbH * (L / S_H) ;
+
+      const M = fy / (0.85 * fc);
+      const Rn = Mu * 100000 / (0.9 * L * d * d);
+      const lo1 = (1 / M) * (1 - Math.sqrt(1 - 2 * M * Rn / fy));
+      const lo_min = Math.max(0.8 * Math.sqrt(fc) / fy, 14 / fy);
+      const lo_temp =0.0018;
+     const lo_v1 =0.0015;
+     const lo_h1 =0.0025;
+
+      const As1 = lo1 * L * d;
+      const Asmin = lo_min * L * d;
+      const Astemp = lo_temp* L * t;
+      const Asv1 =  lo_v1 * L * d;
+      const Asreqv = Math.max(Math.max(Math.max(Math.min(4 * As1 / 3, Asmin), Astemp), Asv1), As1);
+      const Ash1 =lo_h1 * L * d;
+      const Asreqh = Math.max(Astemp, Ash1);
+
+      const AsUseMaxCheck = As_useV <= As_max;
+let AsUseVCheckText, AsUseHCheckText;
+
+if (As_useV > Asreqv) {
+  AsUseVCheckText = `As_useV > As_req → <span class="ok">OK</span>`;
+} else {
+  AsUseVCheckText = `As_useV < As_req → <span class="ng">NG</span>`;
+}
+
+if (As_useH > Asreqh) {
+  AsUseHCheckText = `As_useH > As_req → <span class="ok">OK</span>`;
+} else {
+  AsUseHCheckText = `As_useH < As_req → <span class="ng">NG</span>`;
+}
+
+let controlSource = (Wu1 < Wu2) ? "風力控制" : "地震力控制";
+    let resultText = `
+控制載重來源：${controlSource}
+
+
+外力計算:
+	<span class="normal">共振放大係數  ap = ${ap.toFixed(3)} 
+
+	地震反應折減係數  Rp = ${Rp.toFixed(3)} 
+
+	容許地震反應折減係數  Rpa = 1 + ( Rp - 1 ) / 1.5 = ${Rpa.toFixed(3)} 
+
+	設計水平總橫力  F = 0.4× SDS ×I× ap ( 1 + 2h1 / h2 ) W / Rpa = ${F.toFixed(3)} tf/m²
+
+	Fmax = 1.6 × SDS × I × W = ${Fmax.toFixed(3)} tf/m²
+
+	Fmin =  0.3 × SDS × I × W = ${Fmin.toFixed(3)} tf/m²
+
+	地震力  Wu<sub>1</sub> = ${Wu1.toFixed(3)} tf/m²
+
+	風力  Wu<sub>2</sub> = 1.6 x Fw = ${Wu2.toFixed(3)} tf/m²
+
+	控制載重  Wu = max ( Wu1, Wu2 ) = ${WuControl.toFixed(3)} tf/m²
+
+<strong>設計載重:</strong><br>
+	最大彎矩  Mu = ${Mu.toFixed(3)} tf·m/m
+
+	最大剪力  Vu = ${Vu.toFixed(3)} tf/m
+
+<strong>斷面配筋:</strong><br>
+
+	有效深度  d = ${d.toFixed(3)} cm
+
+	拉控界限最大鋼筋量  As,<sub>max</sub> = ${As_max.toFixed(3)} cm<sup>2</sup>
+
+	垂直向鋼筋使用量  As,<sub>use_V</sub> = ${ As_useV.toFixed(3)} cm<sup>2</sup>
+
+	水平向鋼筋使用量  As,<sub>use_H</sub> = ${ As_useH.toFixed(3)} cm<sup>2</sup>
+
+	材料強度常數  m = fy / 0.85 / f 'c = ${M.toFixed(3)}
+
+	鋼筋彎矩因數  Rn = Mu / 0.9 / b / d 2 = ${Rn.toFixed(3)} 
+
+	需求鋼筋比  ρ<sub>1</sub> =（1 / m）×［1-（1 - 2 × m × Rn / fy）<sup>0.5</sup>］= ${ lo1.toFixed(4)} 
+
+	最小鋼筋比  ρ<sub>min</sub> = Max（0.8 × f 'c<sup>0.5</sup>/ fy , 14 / fy）= ${ lo_min.toFixed(4)} 
+
+	溫度鋼筋比  ρ<sub>temp</sub> = 0.0018
+
+	最少垂直鋼筋比  ρ<sub>v</sub> =  0.0015
+
+	最少水平鋼筋比  ρ<sub>h</sub> =  0.0025
+
+垂直鋼筋量			
+	需求鋼筋量  As,<sub>1</sub> = ρ<sub>1</sub> × L × d  = ${ As1.toFixed(3)} cm<sup>2</sup>	
+	
+	最小鋼筋量  As,<sub>min</sub> =ρ<sub>min</sub> × L × d = ${ Asmin.toFixed(3)} cm<sup>2</sup>
+		
+	溫度鋼筋量  As,<sub>temp</sub>=ρ<sub>temp</sub> × L × d  = ${ Astemp.toFixed(3)} cm<sup>2</sup>
+		
+	最少鋼筋比鋼筋量  As,<sub>v1</sub>=ρ<sub>v1</sub> × L × d = ${ Asv1.toFixed(3)} cm<sup>2</sup>
+			
+	設計鋼筋量  As,<sub>req</sub>  = ${ Asreqv.toFixed(3)} cm<sup>2</sup>		
+		 	
+水平鋼筋量			
+	溫度鋼筋量  As,<sub>temp</sub>=ρ<sub>temp</sub> × L × d = ${ Astemp.toFixed(3)} cm<sup>2</sup>	
+		
+	最少鋼筋比鋼筋量  As,<sub>h1</sub>=ρ<sub>h1</sub> × L × d = ${ Ash1.toFixed(3)} cm<sup>2</sup>	
+	
+	設計鋼筋量  As,<sub>req</sub>  = ${ Asreqh.toFixed(3)} cm<sup>2</sup>		
+
+
+   垂直鋼筋 As_useV = ${As_useV.toFixed(2)} cm²，As<sub>req</sub> = ${Asreqv.toFixed(2)} cm² → ${AsUseVCheckText}
+   水平鋼筋 As_useH = ${As_useH.toFixed(2)} cm²，As<sub>req</sub> = ${Asreqh.toFixed(2)} cm² → ${AsUseHCheckText}
+    As_useV = ${As_useV.toFixed(2)} cm² < As_max = ${As_max.toFixed(2)} cm² → ${AsUseMaxCheck ? '<span class="ok">OK</span>' : '<span class="ng">NG</span>'}
+      `;
+
+      document.getElementById("result").innerHTML = resultText;
+    }
+  </script>
+</body>
+</html>

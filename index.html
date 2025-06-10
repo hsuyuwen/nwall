@@ -19,7 +19,7 @@
   <div style="flex: 1;">
     
       <label>牆高 H（cm）：<input type="number" id="H" value="500"></label>
-      <label>牆長 L（cm）：<input type="number" id="L1" value="100"></label>
+      <label>牆長 L（cm）：<input type="number" id="L" value="100"></label>
       <label>牆厚 t（cm）：<input type="number" id="t" value="20"></label>
       <label>保護層 c.c.（cm）：<input type="number" id="cc" value="2"></label>          
      
@@ -137,7 +137,7 @@
 
     function calculate() {
       const H = +document.getElementById("H").value;
-      const L1 = +document.getElementById("L1").value;
+      const L = +document.getElementById("L").value;
       const t = +document.getElementById("t").value;
       const cc = +document.getElementById("cc").value;
       const fc = +document.getElementById("concreteGrade").value;
@@ -154,7 +154,7 @@
       const SDL = +document.getElementById("SDL").value;
       const a1 = document.getElementById("a1").value;
       const a2 = document.getElementById("a2").value;
-      const L = 100
+      const L1 = 100
 
       let ap, Rp;
 

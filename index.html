@@ -1,10 +1,26 @@
 
 <!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>一般牆配筋計算器</title>
+   <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input, select { padding: 6px; margin: 6px 0; width: 100%; }
+    label { font-weight: bold; margin-top: 12px; display: block; }
+    button { padding: 10px 20px; margin-top: 20px; }
+    #result { margin-top: 30px; font-size: 16px; white-space: pre-wrap; background: #f3f3f3; padding: 15px; border-radius: 5px; }
+    .ok { color: green; font-weight: bold; }
+    .ng { color: red; font-weight: bold; }
 
-	
-  <div id="calculator">
-    <h2>一般牆配筋計算</h2>
-  
+
+	  .row { display: flex; gap: 20px; flex-wrap: wrap;  }
+  .row label { display: flex; flex-direction: column; flex: 1 1 0;  } 
+  .normal { font-weight: normal;  }
+  </style>
+</head>
+ <div id="calculator">
+    <h2>一般牆配筋計算</h2>	
 <!-- 雙欄-->
 <div style="display: flex; gap: 30px; align-items: flex-start;">
 

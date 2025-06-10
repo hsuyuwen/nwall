@@ -261,10 +261,10 @@ if (As_useH > Asreqh) {
 
 let controlSource = (Wu1 < Wu2) ? "風力控制" : "地震力控制";
     let resultText = `
-控制載重來源：${controlSource}
+<span class="normal">控制載重來源：${controlSource}
 
 <strong>最小厚度檢核：</strong><br> 
-t = ${t.toFixed(0)} cm，Min,t = ${Mint.toFixed(2)} cm → ${tCheck}
+<span class="normal">t = ${t.toFixed(0)} cm，Min,t = ${Mint.toFixed(2)} cm → ${tCheck}
 
 外力計算:
 	<span class="normal">共振放大係數  ap = ${ap.toFixed(3)} 

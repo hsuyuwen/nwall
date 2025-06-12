@@ -19,6 +19,25 @@
   .normal { font-weight: normal;  }
   </style>
 </head>
+<script>
+// 禁止右鍵選單
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});
+
+// 禁止 F12、Ctrl+Shift+I、Ctrl+Shift+J、Ctrl+U 等常見快捷鍵
+document.addEventListener('keydown', function (e) {
+  if (
+    e.key === 'F12' ||
+    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+    (e.ctrlKey && e.key === 'U')
+  ) {
+    e.preventDefault();
+  }
+});
+</script>
+
+	
  <div id="calculator">
     <h2>一般牆配筋計算</h2>	
 <!-- 雙欄-->
